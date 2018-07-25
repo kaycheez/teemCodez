@@ -27,7 +27,6 @@ $(document).ready(function() {
 
   $('#new-game-btn').on('click', function() {
       event.preventDefault()
-      console.log("CLICKED!")
 
       addNewGame();
   })
@@ -40,13 +39,15 @@ $(document).ready(function() {
   
   updatePlayerList();
 
+  refreshGameLogs();
+
 });
 
 function addNewPlayer(player) {
   let playersArr = JSON.parse(localStorage.getItem('players'));
   let newPlayer = {
     name: player,
-    elo: 999
+    elo: 1000
   }
 
   playersArr.push(newPlayer);
@@ -134,6 +135,8 @@ function addNewGame() {
   updateElo(winner, newWinnerElo, loser, newLoserElo);
 
   refreshScoreboard();
+
+  logGame(winner, winnerScore, loser, loserScore);
 }
 
 function calculateElo(winnerElo, loserElo) {
@@ -141,8 +144,8 @@ function calculateElo(winnerElo, loserElo) {
   let winnerPrct = (1/(1 + Math.pow(10, ((winnerElo - loserElo) / 400))))
   let loserPrct = (1/(1 + Math.pow(10, ((loserElo - winnerElo) / 400))))
   
-  newWinnerElo = winnerElo + k * (1 - winnerPrct);
-  newLoserElo = loserElo + k * (0 - loserPrct);
+  newWinnerElo = Math.round(winnerElo + k * (1 - winnerPrct));
+  newLoserElo = Math.round(loserElo + k * (0 - loserPrct));
   console.log("In calculateElo " + newWinnerElo + " " + newLoserElo);
 }
 
@@ -159,6 +162,34 @@ function updateElo(winner, newWinnerElo, loser, newLoserElo) {
     }
   }
   localStorage.setItem('players', JSON.stringify(playersArr));
+}
+
+function logGame(winner, winnerScore, loser, loserScore) {
+  let gamesArr = JSON.parse(localStorage.getItem('games')) || [];
+
+  let newGame = {
+    winner: winner,
+    winnerScore: winnerScore,
+    loser: loser,
+    loserScore: loserScore
+  };
+  gamesArr.push(newGame);
+
+  localStorage.setItem('games', JSON.stringify(gamesArr));
+
+  refreshGameLogs();
+}
+
+function refreshGameLogs() {
+  let gamesArr = JSON.parse(localStorage.getItem('games')) || [];
+  let $gameLogContainer = $('.game-logs');
+  $gameLogContainer.html('');
+  for(let i = 0; i < gamesArr.length; i++) {
+    let $gameLog = $(`<div class='game-log'></div>`);
+
+    $gameLog.text(`${gamesArr[i].winner} Beat ${gamesArr[i].loser}: (${gamesArr[i].winnerScore}-${gamesArr[i].loserScore})`);
+    $gameLogContainer.prepend($gameLog);
+  }
 }
 
 
