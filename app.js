@@ -1,22 +1,28 @@
+let newWinnerElo, newLoserElo;
 $(document).ready(function() {
 
   $('.add-player-btn').on('click', function() {
     let newPlayer = $('.new-player').val();
-
-    // determine if users key exists
-    if(!localStorage.getItem('players')) {
-      let players = [];
-      // no, set users key and add new player
-      localStorage.setItem('players', JSON.stringify(players));
-    }
+    
+    if(newPlayer){
+      // determine if users key exists
+      if (!localStorage.getItem('players')) {
+        let players = [];
+        // no, set users key and add new player
+        localStorage.setItem('players', JSON.stringify(players));
+      }
       // yes, add new player
-
-    addNewPlayer(newPlayer);
-
-    // localStorage.setItem('player1', newPlayer);
-    refreshScoreboard();
-
-    updatePlayerList();
+      
+      addNewPlayer(newPlayer);
+      
+      // localStorage.setItem('player1', newPlayer);
+      refreshScoreboard();
+      
+      updatePlayerList();
+      
+    } else {
+      console.log('you aint nothing');
+    }
   })
 
   $('#new-game-btn').on('click', function() {
@@ -32,7 +38,7 @@ $(document).ready(function() {
 
   refreshScoreboard();
   
-  updatePlayerList()
+  updatePlayerList();
 
 });
 
@@ -48,11 +54,12 @@ function addNewPlayer(player) {
 }
 
 function refreshScoreboard() {
- let playersArr = JSON.parse(localStorage.getItem('players'));
+ let playersArr = JSON.parse(localStorage.getItem('players')) || [];
  let $container = $('.scoreboard-container');
 
- sortBy(playersArr, 'elo');
+//  if(playersArr === undefined) 
 
+ sortBy(playersArr, 'elo');
  $container.html('');
 
  for (let i = 0; i < playersArr.length; i++) {
@@ -88,8 +95,13 @@ function sortBy(playersArray, key) {
 }
 
 function updatePlayerList() {
-  let playersArr = JSON.parse(localStorage.getItem('players'));
+  //TODO
+  // clear field
+
+  let playersArr = JSON.parse(localStorage.getItem('players')) || [];
   let $playersList = $('.players-list');
+
+  $playersList.html('');
   
   sortBy(playersArr, "name");
   
@@ -104,7 +116,49 @@ function updatePlayerList() {
 
 
 function addNewGame() {
-  console.log($('#new-game').serializeArray());
+  let playersArr = JSON.parse(localStorage.getItem('players')) 
+  let $submitArray = $('#new-game').serializeArray();
+  let winner = $submitArray[0].value;
+  let winnerScore = $submitArray[1].value;
+  let loser = $submitArray[2].value;
+  let loserScore = $submitArray[3].value;
+  var winnerElo, loserElo;
+
+  // filter into array 
+  winnerElo = playersArr.filter(((player) => player.name === winner))[0].elo;
+  loserElo = playersArr.filter(((player) => player.name === loser))[0].elo;
+
+  calculateElo(winnerElo, loserElo);
+  // console.log("In addnewgame " + newWinnerElo + " " + newLoserElo);
+
+  updateElo(winner, newWinnerElo, loser, newLoserElo);
+
+  refreshScoreboard();
+}
+
+function calculateElo(winnerElo, loserElo) {
+  const k = 16;
+  let winnerPrct = (1/(1 + Math.pow(10, ((winnerElo - loserElo) / 400))))
+  let loserPrct = (1/(1 + Math.pow(10, ((loserElo - winnerElo) / 400))))
+  
+  newWinnerElo = winnerElo + k * (1 - winnerPrct);
+  newLoserElo = loserElo + k * (0 - loserPrct);
+  console.log("In calculateElo " + newWinnerElo + " " + newLoserElo);
+}
+
+function updateElo(winner, newWinnerElo, loser, newLoserElo) {
+  let playersArr = JSON.parse(localStorage.getItem('players'));
+  
+  for(let i = 0; i < playersArr.length; i++) {
+    if(playersArr[i].name === winner) {
+      playersArr[i].elo = newWinnerElo;
+      console.log(playersArr)
+    }
+    if(playersArr[i].name === loser) {
+      playersArr[i].elo = newLoserElo;
+    }
+  }
+  localStorage.setItem('players', JSON.stringify(playersArr));
 }
 
 
