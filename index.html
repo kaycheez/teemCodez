@@ -13,22 +13,64 @@
       integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
       crossorigin="anonymous">
     </script>
+    <link rel="stylesheet" href="style.css">
     <script src="app.js"></script>
   </head>
   <body>
-    <div>
+    <div class="container">
 
-        <input class="input-field-title" type="text">
-        <input class="input-field-body" type="text">
-        <button class="store-btn">store data</button>
-        <button class="get-btn">get data</button>
-        <button class="delete-btn">delete data</button>
+      <div class="scoreboard-container">
+        SCOREBOARD
+        <div class="scoreboard">SCOREBOARD RESULTS</div>
+      </div>
+
+      <div class="add-player-container">
+        <input class="new-player" type="text" placeholder="New Challenger">
+        <button class="add-player-btn">ADD PLAYER</button>
+      </div>
+
+      <form action="" id="new-game">
+
+        <div class="player-container winner">Winner
+          <select name="winner" class="players-list">
+            <option value="default">Pick a player</option>
+          </select>
+          <input type="text" id="winner-score" name="winner-score" placeholder="Score">
+        </div>
+        <div class="player-container loser">Loser
+          <select name="loser" class="players-list">
+            <option value="default">Pick a player</option>
+          </select>
+          <input type="text" id="loser-score" name="winner-score" placeholder="Score">
+        </div>
+
+        <input type="submit" value="Submit" id="new-game-btn">
+  
+        <!-- <div class="update-score">
+          <button class="update-score-btn">SUBMIT SCORES</button>
+        </div> -->
+
+
+      </form>
+
+
+      <div class="game-log">GAME LOGS</div>
+
+
+
+
+<!--       
+      <input class="input-field-title" type="text" placeholder="Enter the Title">
+      <textarea class="input-field-body" placeholder="Enter the content"></textarea>
+      <button class="store-btn">store data</button>
+      <button class="get-btn">get data</button>
+      <button class="delete-btn">delete data</button>
 
     </div> 
 
-    <div class="debug">
+    <div class="item-display">
 
-    </div>
+    </div> -->
 
   </body>
 </html>
